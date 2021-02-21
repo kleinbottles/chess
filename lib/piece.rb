@@ -51,7 +51,7 @@ module Chess
     end
 
     def get_moves(pos)
-      cell_ahead(pos[0], pos[1])
+      [cell_ahead(pos[0], pos[1])]
     end
   end
 

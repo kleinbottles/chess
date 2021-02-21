@@ -22,7 +22,7 @@ module Chess
       end
 
       it 'returns vertical lines' do
-        expect(moves).to include([1, 0], [2, 0], [3, 0], [7,0])
+        expect(moves).to include([1, 0], [2, 0], [3, 0], [7, 0])
       end
 
       it 'does not return diagonal lines' do

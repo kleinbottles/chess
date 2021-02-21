@@ -21,6 +21,8 @@ module Chess
     end
 
     def move(starting_pos, ending_pos)
+      return false unless legal_move?(starting_pos, ending_pos) && clear_path(starting_pos, ending_pos)
+
       set_cell(ending_pos[0], ending_pos[1], get_cell(starting_pos[0], starting_pos[1]).value)
       set_cell(starting_pos[0], starting_pos[1], nil)
     end
@@ -49,11 +51,54 @@ module Chess
       end
     end
 
-
     private
 
     def default_grid
       Array.new(8) { Array.new(8) { Cell.new } }
     end
+
+    def legal_move?(starting_pos, ending_pos)
+      piece = get_piece(starting_pos)
+      return true if piece.get_moves(starting_pos).include? ending_pos
+    end
+
+    def clear_path(starting_pos, ending_pos)
+      piece = get_piece(starting_pos)
+      # path is not clear if there is a piece on the ending position
+      return false if get_piece(ending_pos)
+      # the knight's path is clear if there is no piece on the final position
+      return true if piece.instance_of?(Chess::Knight)
+
+      # check horizontal lines
+      if starting_pos[1] == ending_pos[1]
+        if starting_pos[0] < ending_pos[0]
+          ((starting_pos[0] + 1)..(ending_pos[0] + 1)).each do |space|
+            return false if !get_cell(space, starting_pos[1]).value.nil?
+          end
+        else
+          (starting_pos[0] - 1).downto(ending_pos[0]). each do |space|
+            return false if !get_cell(space, starting_pos[1]).value.nil?
+          end
+        end
+      # check vertical lines
+      elsif starting_pos[0] == ending_pos[0]
+        if starting_pos[1] < ending_pos[1]
+          ((starting_pos[1] + 1)..(ending_pos[1] + 1)).each do |space|
+            return false if !get_cell(starting_pos[0], space).value.nil?
+          end
+        else
+          starting_pos[1].downto(ending_pos[1]). each do |space|
+            return false if !get_cell(starting_pos[0], space).value.nil?
+          end
+        end
+      else
+        true
+      end
+    end
+
+    def get_piece(pos)
+      get_cell(pos[0], pos[1]).value
+    end
+
   end
 end
