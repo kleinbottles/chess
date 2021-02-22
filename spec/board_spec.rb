@@ -33,12 +33,31 @@ module Chess
         end
 
         it 'moves the piece to the given final position (rook)' do
-          starting_pos = [0, 0]
-          ending_pos = [0, 4]
-          piece = board.get_cell(0, 0).value
-          board.set_cell(0, 1, nil)
+          starting_pos = [0, 7]
+          ending_pos = [0, 5]
+          piece = board.get_cell(0, 7).value
+          board.set_cell(0, 6, nil)
           board.move(starting_pos, ending_pos)
-          expect(board.get_cell(0, 4).value).to eql piece
+          expect(board.get_cell(0, 5).value).to eql piece
+        end
+
+        it 'moves the piece to the given final position (bishop)' do
+          starting_pos = [2, 0]
+          ending_pos = [4, 2]
+          piece = board.get_cell(2, 0).value
+          board.set_cell(3, 1, nil)
+          board.move(starting_pos, ending_pos)
+          expect(board.get_cell(4, 2).value).to eql piece
+        end
+      end
+
+      context 'when an illegal move is made' do
+
+
+        it 'returns false' do
+          starting_pos = [0, 7]
+          ending_pos = [0, 5]
+          expect(board.move(starting_pos, ending_pos)).to eql false
         end
       end
 

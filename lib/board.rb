@@ -71,29 +71,64 @@ module Chess
 
       # check horizontal lines
       if starting_pos[1] == ending_pos[1]
-        if starting_pos[0] < ending_pos[0]
-          ((starting_pos[0] + 1)..(ending_pos[0] + 1)).each do |space|
-            return false if !get_cell(space, starting_pos[1]).value.nil?
-          end
-        else
-          (starting_pos[0] - 1).downto(ending_pos[0]). each do |space|
-            return false if !get_cell(space, starting_pos[1]).value.nil?
-          end
-        end
+        check_horizontal(starting_pos[0], ending_pos[0], starting_pos[1])
       # check vertical lines
       elsif starting_pos[0] == ending_pos[0]
-        if starting_pos[1] < ending_pos[1]
-          ((starting_pos[1] + 1)..(ending_pos[1] + 1)).each do |space|
-            return false if !get_cell(starting_pos[0], space).value.nil?
-          end
-        else
-          starting_pos[1].downto(ending_pos[1]). each do |space|
-            return false if !get_cell(starting_pos[0], space).value.nil?
-          end
-        end
-      else
-        true
+        check_vertical(starting_pos[1], ending_pos[1], starting_pos[0])
+      # check diagonal lines
+      elsif ((starting_pos[0] - ending_pos[0]) / (starting_pos[1] - ending_pos[1])) == 1
+        check_diagonal_up(starting_pos, ending_pos)
+      elsif ((starting_pos[0] - ending_pos[0]) / (starting_pos[1] - ending_pos[1])) == -1
+        check_diagonal_down(starting_pos, ending_pos)
       end
+    end
+
+    def check_horizontal(starting_posx, ending_posx, y_value)
+      max = [starting_posx, ending_posx].max - 1
+      min = [starting_posx, ending_posx].min + 1
+
+      max.downto(min).each do |space|
+        return false unless get_cell(space, y_value).value.nil?
+      end
+      true
+    end
+
+    def check_vertical(starting_posy, ending_posy, x_value)
+      max = [starting_posy, ending_posy].max - 1
+      min = [starting_posy, ending_posy].min + 1
+
+      max.downto(min).each do |space|
+        return false unless get_cell(x_value, space).value.nil?
+      end
+      true
+    end
+
+    def check_diagonal_up(starting_pos, ending_pos)
+      x1 = [starting_pos[0], ending_pos[0]].min + 1
+      x2 = [starting_pos[0], ending_pos[0]].max
+      y1 = [starting_pos[1], ending_pos[1]].min + 1
+      y2 = [starting_pos[1], ending_pos[1]].max
+
+      until (x1 == x2 && y1 == y2)
+        return false unless get_cell(x1, y1).value.nil?
+        x1 += 1
+        y1 += 1
+      end
+      true
+    end
+
+    def check_diagonal_down(starting_pos, ending_pos)
+      x1 = [starting_pos[0], ending_pos[0]].min + 1
+      x2 = [starting_pos[0], ending_pos[0]].max
+      y1 = [starting_pos[1], ending_pos[1]].max - 1
+      y2 = [starting_pos[1], ending_pos[1]].max
+
+      until (x1 == x2 && y1 == y2)
+        return false unless get_cell(x1, y1).value.nil?
+        x1 += 1
+        y1 -= 1
+      end
+      true
     end
 
     def get_piece(pos)
