@@ -6,7 +6,8 @@ require_relative 'piece'
 module Chess
   # The board class creates the board object which tracks the game state.
   class Board
-    attr_reader :grid
+    attr_reader :grid, :pieces_white, :pieces_black
+
 
     def initialize
       @grid = default_grid
@@ -26,6 +27,7 @@ module Chess
       set_cell(ending_pos[0], ending_pos[1], get_cell(starting_pos[0], starting_pos[1]).value)
       set_cell(starting_pos[0], starting_pos[1], nil)
     end
+
 
     def starting_board
       @grid[0][0].value, @grid[0][7].value = Rook.new(:black), Rook.new(:black)
@@ -51,6 +53,14 @@ module Chess
       end
     end
 
+    def check?(pos)
+      piece = get_piece(pos)
+      moves = piece.get_moves
+      moves.each do |move|
+        return true if move.value.instance_of?(Chess::Knight) && move.value.color != piece.color
+      end
+    end
+
     private
 
     def default_grid
@@ -64,8 +74,9 @@ module Chess
 
     def clear_path(starting_pos, ending_pos)
       piece = get_piece(starting_pos)
-      # path is not clear if there is a piece on the ending position
-      return false if get_piece(ending_pos)
+      # path is not clear if there is a same-color piece on the ending position
+      # if there is an opposite color piece on the ending position, it is replaced
+      return false if get_piece(ending_pos) && get_piece(ending_pos).color == piece.color
       # the knight's path is clear if there is no piece on the final position
       return true if piece.instance_of?(Chess::Knight)
 
@@ -134,6 +145,5 @@ module Chess
     def get_piece(pos)
       get_cell(pos[0], pos[1]).value
     end
-
   end
 end
