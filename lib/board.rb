@@ -6,8 +6,7 @@ require_relative 'piece'
 module Chess
   # The board class creates the board object which tracks the game state.
   class Board
-    attr_reader :grid, :pieces_white, :pieces_black
-
+    attr_reader :grid
 
     def initialize
       @grid = default_grid
@@ -24,10 +23,11 @@ module Chess
     def move(starting_pos, ending_pos)
       return false unless legal_move?(starting_pos, ending_pos) && clear_path(starting_pos, ending_pos)
 
-      set_cell(ending_pos[0], ending_pos[1], get_cell(starting_pos[0], starting_pos[1]).value)
+      piece = get_piece(starting_pos)
+      set_cell(ending_pos[0], ending_pos[1], piece)
+      piece.pos = [ending_pos[0], ending_pos[1]]
       set_cell(starting_pos[0], starting_pos[1], nil)
     end
-
 
     def starting_board
       set_cell(0, 0, Rook.new(:black, [0, 0]));   set_cell(7, 0, Rook.new(:black, [7, 0]));
@@ -41,9 +41,9 @@ module Chess
       set_cell(0, 7, Rook.new(:white, [0, 7]));   set_cell(7, 7, Rook.new(:white, [7, 7]));
       set_cell(1, 7, Knight.new(:white, [1, 7])); set_cell(6, 7, Knight.new(:white, [6, 7]));
       set_cell(2, 7, Bishop.new(:white, [2, 7])); set_cell(5, 7, Bishop.new(:white, [5, 7]));
-      set_cell(3, 7, King.new(:white, [3, 7]));  set_cell(4, 7, Queen.new(:white, [4, 7]));
+      set_cell(3, 7, King.new(:white, [3, 7]));   set_cell(4, 7, Queen.new(:white, [4, 7]));
       8.times do |space|
-        set_cell(space, 6, Pawn.new(:black, [space, 6]))
+        set_cell(space, 6, Pawn.new(:white, [space, 6]))
       end
     end
 
@@ -61,6 +61,18 @@ module Chess
       end
     end
 
+    def all_pieces(chosen_color)
+      pieces = []
+      8.times do |row|
+        8.times do |column|
+          if !get_cell(row, column).value.nil? && get_piece([row, column]).color == chosen_color
+            pieces << get_piece([row, column])
+          end
+        end
+      end
+      pieces
+    end
+
     private
 
     def default_grid
@@ -74,9 +86,8 @@ module Chess
 
     def clear_path(starting_pos, ending_pos)
       piece = get_piece(starting_pos)
-      # path is not clear if there is a same-color piece on the ending position
-      # if there is an opposite color piece on the ending position, it is replaced
-      return false if get_piece(ending_pos) && get_piece(ending_pos).color == piece.color
+      # path is not clear if there is a piece on the ending position
+      return false if get_piece(ending_pos)
       # the knight's path is clear if there is no piece on the final position
       return true if piece.instance_of?(Chess::Knight)
 
