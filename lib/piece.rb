@@ -4,9 +4,11 @@ module Chess
   # This is the parent class for all the pieces on the board
   class Piece
     attr_reader :color
+    attr_accessor :pos
 
-    def initialize(color)
+    def initialize(color, pos = nil)
       @color = color
+      @pos = pos
     end
 
     def right_angle_lines(x, y, moves = [])
@@ -44,9 +46,10 @@ module Chess
 
   class Pawn < Piece
     attr_reader :symbol, :color
+    attr_accessor :pos
 
-    def initialize(color)
-      super(color)
+    def initialize(color, pos = nil)
+      super(color, pos)
       @symbol = color == :black ? "\u265f" : "\u2659"
     end
 
@@ -57,9 +60,10 @@ module Chess
 
   class Rook < Piece
     attr_reader :symbol, :color
+    attr_accessor :pos
 
-    def initialize(color)
-      super(color)
+    def initialize(color, pos = nil)
+      super(color, pos)
       @symbol = color == :black ? "\u265c" : "\u2656"
     end
 
@@ -70,9 +74,10 @@ module Chess
 
   class Bishop < Piece
     attr_reader :symbol, :color
+    attr_accessor :pos
 
-    def initialize(color)
-      super(color)
+    def initialize(color, pos = nil)
+      super(color, pos)
       @symbol = color == :black ? "\u265d" : "\u2657"
     end
 
@@ -83,9 +88,10 @@ module Chess
 
   class Knight < Piece
     attr_reader :symbol, :color
+    attr_accessor :pos
 
-    def initialize(color)
-      super(color)
+    def initialize(color, pos = nil)
+      super(color, pos)
       @symbol = color == :black ? "\u265e" : "\u2658"
     end
 
@@ -101,9 +107,10 @@ module Chess
 
   class Queen < Piece
     attr_reader :symbol, :color
+    attr_accessor :pos
 
-    def initialize(color)
-      super(color)
+    def initialize(color, pos = nil)
+      super(color, pos)
       @symbol = color == :black ? "\u265b" : "\u2655"
     end
 
@@ -114,9 +121,10 @@ module Chess
 
   class King < Piece
     attr_reader :symbol, :color
+    attr_accessor :pos
 
-    def initialize(color)
-      super(color)
+    def initialize(color, pos = nil)
+      super(color, pos)
       @symbol = color == :black ? "\u265a" : "\u2654"
     end
 
