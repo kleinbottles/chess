@@ -30,20 +30,20 @@ module Chess
 
 
     def starting_board
-      @grid[0][0].value, @grid[0][7].value = Rook.new(:black), Rook.new(:black)
-      @grid[0][1].value, @grid[0][6].value = Knight.new(:black), Knight.new(:black)
-      @grid[0][2].value, @grid[0][5].value = Bishop.new(:black), Bishop.new(:black)
-      @grid[0][3].value, @grid[0][4].value = Queen.new(:black), King.new(:black)
+      set_cell(0, 0, Rook.new(:black, [0, 0]));   set_cell(7, 0, Rook.new(:black, [7, 0]));
+      set_cell(1, 0, Knight.new(:black, [1, 0])); set_cell(6, 0, Knight.new(:black, [6, 0]));
+      set_cell(2, 0, Bishop.new(:black, [2, 0])); set_cell(5, 0, Bishop.new(:black, [5, 0]));
+      set_cell(3, 0, Queen.new(:black, [3, 0]));  set_cell(4, 0, King.new(:black, [4, 0]));
       8.times do |space|
-        grid[1][space].value = Pawn.new(:black)
+        set_cell(space, 1, Pawn.new(:black, [space, 1]))
       end
 
-      @grid[7][0].value, @grid[7][7].value = Rook.new(:white), Rook.new(:white)
-      @grid[7][1].value, @grid[7][6].value = Knight.new(:white), Knight.new(:white)
-      @grid[7][2].value, @grid[7][5].value = Bishop.new(:white), Bishop.new(:white)
-      @grid[7][3].value, @grid[7][4].value = Queen.new(:white), King.new(:white)
+      set_cell(0, 7, Rook.new(:white, [0, 7]));   set_cell(7, 7, Rook.new(:white, [7, 7]));
+      set_cell(1, 7, Knight.new(:white, [1, 7])); set_cell(6, 7, Knight.new(:white, [6, 7]));
+      set_cell(2, 7, Bishop.new(:white, [2, 7])); set_cell(5, 7, Bishop.new(:white, [5, 7]));
+      set_cell(3, 7, King.new(:white, [3, 7]));  set_cell(4, 7, Queen.new(:white, [4, 7]));
       8.times do |space|
-        grid[6][space].value = Pawn.new(:white)
+        set_cell(space, 6, Pawn.new(:black, [space, 6]))
       end
     end
 
