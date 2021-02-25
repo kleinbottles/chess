@@ -29,6 +29,8 @@ module Chess
     def adjacent_cells(x, y)
       moves = [[x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1],
                [x + 1, y + 1], [x - 1, y - 1], [x + 1, y - 1], [x - 1, y + 1]]
+      moves.reject! { |move| move.any? { |space| space.negative? || space > 7 } }
+      moves
     end
 
     def cell_ahead(x, y)

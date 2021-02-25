@@ -8,8 +8,8 @@ module Chess
   class Board
     attr_reader :grid
 
-    def initialize
-      @grid = default_grid
+    def initialize(grid = default_grid)
+      @grid = grid
     end
 
     def get_cell(x, y)
@@ -57,7 +57,42 @@ module Chess
       king_pos = get_king_pos(color)
       enemy_moves = get_all_legal_moves(opposite_color(color))
       return true if enemy_moves.include? king_pos
+      false
     end
+
+    def test_move(starting_pos, ending_pos)
+      piece = get_piece(starting_pos)
+      set_cell(ending_pos[0], ending_pos[1], piece)
+      piece.pos = [ending_pos[0], ending_pos[1]]
+      set_cell(starting_pos[0], starting_pos[1], nil)
+    end
+
+
+    def checkmate?(color)
+      pieces = all_pieces(color)
+      until pieces.empty?
+        piece = pieces.pop
+        piece_position = piece.pos
+        moves = get_legal_moves(piece)
+        until moves.empty?
+          current_move = moves.pop
+          # the 'test move' might have a piece on it that we could delete, so we need to restore it
+          # if there is nothing there, the value will remain nil
+          to_revert = get_cell(current_move[0], current_move[1]).value
+          move(piece_position, current_move)
+          if !check?(color)
+            test_move(current_move, piece_position)
+            set_cell(current_move[0], current_move[1], to_revert)
+            return false
+          else
+            test_move(current_move, piece_position)
+            set_cell(current_move[0], current_move[1], to_revert)
+          end
+        end
+      end
+      true
+    end
+
 
     def all_pieces(chosen_color)
       pieces = []
@@ -80,7 +115,6 @@ module Chess
       pieces = all_pieces(color)
       pieces.reduce([]) { |i, piece| i + get_legal_moves(piece) }
     end
-
 
     private
 
@@ -135,15 +169,15 @@ module Chess
     end
 
     def check_diagonal_up(starting_pos, ending_pos)
-      x1 = [starting_pos[0], ending_pos[0]].min + 1
-      x2 = [starting_pos[0], ending_pos[0]].max
-      y1 = [starting_pos[1], ending_pos[1]].min + 1
-      y2 = [starting_pos[1], ending_pos[1]].max
+      x1 = [starting_pos[0], ending_pos[0]].max - 1
+      x2 = [starting_pos[0], ending_pos[0]].min
+      y1 = [starting_pos[1], ending_pos[1]].max - 1
+      y2 = [starting_pos[1], ending_pos[1]].min
 
       until (x1 == x2 && y1 == y2)
         return false unless get_cell(x1, y1).value.nil?
-        x1 += 1
-        y1 += 1
+        x1 -= 1
+        y1 -= 1
       end
       true
     end
@@ -152,7 +186,7 @@ module Chess
       x1 = [starting_pos[0], ending_pos[0]].min + 1
       x2 = [starting_pos[0], ending_pos[0]].max
       y1 = [starting_pos[1], ending_pos[1]].max - 1
-      y2 = [starting_pos[1], ending_pos[1]].max
+      y2 = [starting_pos[1], ending_pos[1]].min
 
       until (x1 == x2 && y1 == y2)
         return false unless get_cell(x1, y1).value.nil?
@@ -175,5 +209,8 @@ module Chess
       king = pieces.detect { |piece| piece.instance_of? Chess::King }
       king.pos
     end
+
+
+
   end
 end
