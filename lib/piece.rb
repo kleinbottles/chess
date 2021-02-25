@@ -53,8 +53,8 @@ module Chess
       @symbol = color == :black ? "\u265f" : "\u2659"
     end
 
-    def get_moves(pos)
-      [cell_ahead(pos[0], pos[1])]
+    def get_moves(position = pos)
+      [cell_ahead(position[0], position[1])]
     end
   end
 
@@ -67,8 +67,8 @@ module Chess
       @symbol = color == :black ? "\u265c" : "\u2656"
     end
 
-    def get_moves(pos)
-      right_angle_lines(pos[0], pos[1])
+    def get_moves(position = pos)
+      right_angle_lines(position[0], position[1])
     end
   end
 
@@ -81,8 +81,8 @@ module Chess
       @symbol = color == :black ? "\u265d" : "\u2657"
     end
 
-    def get_moves(pos)
-      diagonal_lines(pos[0], pos[1])
+    def get_moves(position = pos)
+      diagonal_lines(position[0], position[1])
     end
   end
 
@@ -95,9 +95,9 @@ module Chess
       @symbol = color == :black ? "\u265e" : "\u2658"
     end
 
-    def get_moves(pos)
-      x = pos[0]
-      y = pos[1]
+    def get_moves(position = pos)
+      x = position[0]
+      y = position[1]
       moves = [[x + 2, y + 1], [x + 2, y - 1], [x - 2, y + 1], [x - 2, y - 1],
                [x + 1, y + 2], [x + 1, y - 2], [x - 1, y + 2], [x - 1, y - 2]]
       moves.reject! { |move| move.any? { |space| space.negative? || space > 7 } }
@@ -114,8 +114,8 @@ module Chess
       @symbol = color == :black ? "\u265b" : "\u2655"
     end
 
-    def get_moves(pos)
-      right_angle_lines(pos[0], pos[1]) + diagonal_lines(pos[0], pos[1])
+    def get_moves(position = pos)
+      right_angle_lines(position[0], position[1]) + diagonal_lines(position[0], position[1])
     end
   end
 
@@ -128,8 +128,8 @@ module Chess
       @symbol = color == :black ? "\u265a" : "\u2654"
     end
 
-    def get_moves(pos)
-      adjacent_cells(pos[0], pos[1])
+    def get_moves(position = pos)
+      adjacent_cells(position[0], position[1])
     end
   end
 end

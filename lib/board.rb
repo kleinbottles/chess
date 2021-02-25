@@ -53,12 +53,10 @@ module Chess
       end
     end
 
-    def check?(pos)
-      piece = get_piece(pos)
-      moves = piece.get_moves
-      moves.each do |move|
-        return true if move.value.instance_of?(Chess::Knight) && move.value.color != piece.color
-      end
+    def check?(color)
+      king_pos = get_king_pos(color)
+      enemy_moves = get_all_legal_moves(opposite_color(color))
+      return true if enemy_moves.include? king_pos
     end
 
     def all_pieces(chosen_color)
@@ -72,6 +70,17 @@ module Chess
       end
       pieces
     end
+
+    def get_legal_moves(piece)
+      potential_moves = piece.get_moves
+      potential_moves.keep_if { |move| legal_move?(piece.pos, move) && clear_path(piece.pos, move) }
+    end
+
+    def get_all_legal_moves(color)
+      pieces = all_pieces(color)
+      pieces.reduce([]) { |i, piece| i + get_legal_moves(piece) }
+    end
+
 
     private
 
@@ -87,7 +96,7 @@ module Chess
     def clear_path(starting_pos, ending_pos)
       piece = get_piece(starting_pos)
       # path is not clear if there is a piece on the ending position
-      return false if get_piece(ending_pos)
+      return false if get_piece(ending_pos) && get_piece(ending_pos).color == piece.color
       # the knight's path is clear if there is no piece on the final position
       return true if piece.instance_of?(Chess::Knight)
 
@@ -155,6 +164,16 @@ module Chess
 
     def get_piece(pos)
       get_cell(pos[0], pos[1]).value
+    end
+
+    def opposite_color(color)
+      color == :black ? :white : :black
+    end
+
+    def get_king_pos(color)
+      pieces = all_pieces(color)
+      king = pieces.detect { |piece| piece.instance_of? Chess::King }
+      king.pos
     end
   end
 end
