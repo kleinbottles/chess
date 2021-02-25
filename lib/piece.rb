@@ -37,6 +37,10 @@ module Chess
       black? ? [x, y + 1] : [x, y - 1]
     end
 
+    def two_cells_ahead(x, y)
+      black? ? [x, y + 2] : [x, y - 2]
+    end
+
     def black?
       color == :black
     end
@@ -48,15 +52,20 @@ module Chess
 
   class Pawn < Piece
     attr_reader :symbol, :color
-    attr_accessor :pos
+    attr_accessor :pos, :move_count
 
-    def initialize(color, pos = nil)
+    def initialize(color, pos = nil, move_count = 0)
       super(color, pos)
+      @move_count = move_count
       @symbol = color == :black ? "\u265f" : "\u2659"
     end
 
     def get_moves(position = pos)
-      [cell_ahead(position[0], position[1])]
+      if move_count == 0
+        [two_cells_ahead(position[0], position[1]), cell_ahead(position[0], position[1])]
+      else
+        [cell_ahead(position[0], position[1])]
+      end
     end
   end
 

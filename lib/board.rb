@@ -27,6 +27,7 @@ module Chess
       set_cell(ending_pos[0], ending_pos[1], piece)
       piece.pos = [ending_pos[0], ending_pos[1]]
       set_cell(starting_pos[0], starting_pos[1], nil)
+      piece.move_count += 1 if piece.instance_of?(Chess::Pawn)
     end
 
     def starting_board
