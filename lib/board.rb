@@ -126,6 +126,10 @@ module Chess
     def legal_move?(starting_pos, ending_pos)
       piece = get_piece(starting_pos)
       return true if piece.get_moves(starting_pos).include? ending_pos
+
+      return true if valid_pawn_attack?(piece, ending_pos)
+
+      false
     end
 
     def clear_path(starting_pos, ending_pos)
@@ -195,6 +199,17 @@ module Chess
         y1 -= 1
       end
       true
+    end
+
+    def valid_pawn_attack?(piece, ending_pos)
+      return false unless piece.instance_of?(Chess::Pawn)
+
+      to_check = piece.diagonals_ahead(piece.pos[0], piece.pos[1])
+      if to_check.any? { |cell| get_cell(cell[0], cell[1]).value&.color != piece.color && get_cell(cell[0],cell[1]).value&.pos == ending_pos }
+        true
+      else
+        false
+      end
     end
 
     def get_piece(pos)

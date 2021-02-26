@@ -33,6 +33,12 @@ module Chess
       moves
     end
 
+    def diagonals_ahead(x, y)
+      moves = black? ? [[x + 1, y + 1,], [x - 1, y + 1]] : [[x + 1, y - 1], [x - 1, y - 1]]
+      moves.reject! { |move| move.any? { |space| space.negative? || space > 7 } }
+      moves
+    end
+
     def cell_ahead(x, y)
       black? ? [x, y + 1] : [x, y - 1]
     end
