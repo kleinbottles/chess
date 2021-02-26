@@ -52,15 +52,47 @@ module Chess
       end
 
       context 'when an illegal move is made' do
-
-
         it 'returns false' do
           starting_pos = [0, 7]
           ending_pos = [0, 5]
           expect(board.move(starting_pos, ending_pos)).to eql false
         end
       end
+    end
 
+    context '#check?' do
+      subject(:board) { described_class.new }
+
+      it 'returns true when the king is in check' do
+        board.set_cell(0, 0, Rook.new(:black, [0, 0]))
+        board.set_cell(0, 1, King.new(:white, [0, 1]))
+        expect(board.check?(:white)).to eql true
+      end
+
+      it 'returns false when the king is not in check' do
+        board.set_cell(4, 0, Rook.new(:black, [4, 0]))
+        board.set_cell(0, 1, King.new(:white, [0, 1]))
+        expect(board.check?(:white)).to eql false
+      end
+    end
+
+    context '#checkmate?' do
+      subject(:board) { described_class.new }
+
+      it 'returns true when there are no ways out of check' do
+        board.set_cell(2, 0, Rook.new(:black, [2, 0]))
+        board.set_cell(0, 2, Rook.new(:black, [0, 2]))
+        board.set_cell(2, 2, Bishop.new(:black, [2, 2]))
+        board.set_cell(0, 0, King.new(:white, [0, 0]))
+        expect(board.checkmate?(:white)).to eql true
+      end
+
+      it 'returns false when there is a way out of check' do
+        board.set_cell(2, 0, Rook.new(:black, [2, 0]))
+        board.set_cell(0, 2, Rook.new(:black, [0, 2]))
+        board.set_cell(0, 0, King.new(:white, [0, 0]))
+        expect(board.checkmate?(:white)).to eql false
+      end
     end
 
   end

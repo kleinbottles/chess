@@ -81,19 +81,14 @@ module Chess
           # if there is nothing there, the value will remain nil
           to_revert = get_cell(current_move[0], current_move[1]).value
           move(piece_position, current_move)
-          if !check?(color)
-            test_move(current_move, piece_position)
-            set_cell(current_move[0], current_move[1], to_revert)
-            return false
-          else
-            test_move(current_move, piece_position)
-            set_cell(current_move[0], current_move[1], to_revert)
-          end
+          in_check = check?(color)
+          test_move(current_move, piece_position)
+          set_cell(current_move[0], current_move[1], to_revert)
+          return false if !in_check
         end
       end
       true
     end
-
 
     def all_pieces(chosen_color)
       pieces = []
@@ -179,8 +174,9 @@ module Chess
       y1 = [starting_pos[1], ending_pos[1]].max - 1
       y2 = [starting_pos[1], ending_pos[1]].min
 
-      until (x1 == x2 && y1 == y2)
+      until x1 == x2 && y1 == y2
         return false unless get_cell(x1, y1).value.nil?
+
         x1 -= 1
         y1 -= 1
       end
@@ -205,7 +201,10 @@ module Chess
       return false unless piece.instance_of?(Chess::Pawn)
 
       to_check = piece.diagonals_ahead(piece.pos[0], piece.pos[1])
-      if to_check.any? { |cell| get_cell(cell[0], cell[1]).value&.color != piece.color && get_cell(cell[0],cell[1]).value&.pos == ending_pos }
+      if to_check.any? do |diag|
+           get_cell(diag[0], diag[1]).value&.color != piece.color &&
+           get_cell(diag[0], diag[1]).value&.pos == ending_pos
+         end
         true
       else
         false
@@ -225,8 +224,5 @@ module Chess
       king = pieces.detect { |piece| piece.instance_of? Chess::King }
       king.pos
     end
-
-
-
   end
 end
