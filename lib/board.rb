@@ -6,10 +6,11 @@ require_relative 'piece'
 module Chess
   # The board class creates the board object which tracks the game state.
   class Board
-    attr_reader :grid
+    attr_reader :grid, :history
 
     def initialize(grid = default_grid)
       @grid = grid
+      @history = []
     end
 
     def get_cell(x, y)
@@ -28,6 +29,7 @@ module Chess
       piece.pos = [ending_pos[0], ending_pos[1]]
       set_cell(starting_pos[0], starting_pos[1], nil)
       piece.move_count += 1 if piece.instance_of?(Chess::Pawn)
+      history << [piece.to_s, starting_pos, ending_pos]
     end
 
     def starting_board
@@ -80,7 +82,7 @@ module Chess
           # the 'test move' might have a piece on it that we could delete, so we need to restore it
           # if there is nothing there, the value will remain nil
           to_revert = get_cell(current_move[0], current_move[1]).value
-          move(piece_position, current_move)
+          test_move(piece_position, current_move)
           in_check = check?(color)
           test_move(current_move, piece_position)
           set_cell(current_move[0], current_move[1], to_revert)

@@ -11,6 +11,13 @@ module Chess
       @pos = pos
     end
 
+    def to_s
+      name = self.class.name
+      name.slice! 'Chess::'
+      "#{color.capitalize} #{name}"
+    end
+
+
     def right_angle_lines(x, y, moves = [])
       7.times { |i| moves.push [(x + i + 1), y], [(x - i - 1), y], [x, (y + i + 1)], [x, (y - i - 1)] }
       moves.reject! { |move| move.any? { |space| space.negative? || space > 7 } }
