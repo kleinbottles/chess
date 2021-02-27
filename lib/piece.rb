@@ -84,10 +84,11 @@ module Chess
 
   class Rook < Piece
     attr_reader :symbol, :color
-    attr_accessor :pos
+    attr_accessor :pos, :move_count
 
-    def initialize(color, pos = nil)
+    def initialize(color, pos = nil, move_count = 0)
       super(color, pos)
+      @move_count = move_count
       @symbol = color == :black ? "\u265c" : "\u2656"
     end
 
@@ -98,10 +99,11 @@ module Chess
 
   class Bishop < Piece
     attr_reader :symbol, :color
-    attr_accessor :pos
+    attr_accessor :pos, :move_count
 
-    def initialize(color, pos = nil)
+    def initialize(color, pos = nil, move_count = 0)
       super(color, pos)
+      @move_count = move_count
       @symbol = color == :black ? "\u265d" : "\u2657"
     end
 
@@ -112,10 +114,11 @@ module Chess
 
   class Knight < Piece
     attr_reader :symbol, :color
-    attr_accessor :pos
+    attr_accessor :pos, :move_count
 
-    def initialize(color, pos = nil)
+    def initialize(color, pos = nil, move_count = 0)
       super(color, pos)
+      @move_count = move_count
       @symbol = color == :black ? "\u265e" : "\u2658"
     end
 
@@ -131,10 +134,11 @@ module Chess
 
   class Queen < Piece
     attr_reader :symbol, :color
-    attr_accessor :pos
+    attr_accessor :pos, :move_count
 
-    def initialize(color, pos = nil)
+    def initialize(color, pos = nil, move_count = 0)
       super(color, pos)
+      @move_count = move_count
       @symbol = color == :black ? "\u265b" : "\u2655"
     end
 
@@ -145,10 +149,11 @@ module Chess
 
   class King < Piece
     attr_reader :symbol, :color
-    attr_accessor :pos
+    attr_accessor :pos, :move_count
 
-    def initialize(color, pos = nil)
+    def initialize(color, pos = nil, move_count = 0)
       super(color, pos)
+      @move_count = move_count
       @symbol = color == :black ? "\u265a" : "\u2654"
     end
 

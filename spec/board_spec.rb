@@ -58,6 +58,14 @@ module Chess
           expect(board.move(starting_pos, ending_pos)).to eql false
         end
       end
+
+      context 'when a move ends in check' do
+        it 'returns false' do
+          board.set_cell(3, 5, Chess::Queen.new(:black, [3, 5]))
+          board.set_cell(4, 6, nil)
+          expect(board.move([4, 7], [4, 6])).to eql false
+        end
+      end
     end
 
     context '#check?' do

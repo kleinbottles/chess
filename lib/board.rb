@@ -21,15 +21,48 @@ module Chess
       get_cell(x, y).value = value
     end
 
-    def move(starting_pos, ending_pos)
+    def move(starting_pos, ending_pos, piece = get_piece(starting_pos))
       return false unless legal_move?(starting_pos, ending_pos) && clear_path(starting_pos, ending_pos)
 
-      piece = get_piece(starting_pos)
+      return false if ends_in_check?(ending_pos, starting_pos, piece.color)
+
       set_cell(ending_pos[0], ending_pos[1], piece)
       piece.pos = [ending_pos[0], ending_pos[1]]
       set_cell(starting_pos[0], starting_pos[1], nil)
-      piece.move_count += 1 if piece.instance_of?(Chess::Pawn)
-      history << [piece.to_s, starting_pos, ending_pos]
+      piece.move_count += 1
+      history << [piece, starting_pos, ending_pos]
+    end
+
+    def castle_queenside(color)
+      return false unless queenside_castling_available?(color)
+
+      king_x = 4
+      rook_x = 0
+      y = color == :white ? 7 : 0
+      king = get_piece([king_x, y])
+      rook = get_piece([rook_x, y])
+      set_cell(2, y, king)
+      king.pos = [2, y]
+      set_cell(3, y, rook)
+      rook.pos = [3, y]
+      set_cell(king_x, y, nil)
+      set_cell(rook_x, y, nil)
+    end
+
+    def castle_kingside(color)
+      return false unless kingside_castling_available?(color)
+
+      king_x = 4
+      rook_x = 7
+      y = color == :white ? 7 : 0
+      king = get_piece([king_x, y])
+      rook = get_piece([rook_x, y])
+      set_cell(6, y, king)
+      king.pos = [6, y]
+      set_cell(5, y, rook)
+      rook.pos = [5, y]
+      set_cell(king_x, y, nil)
+      set_cell(rook_x, y, nil)
     end
 
     def starting_board
@@ -44,7 +77,7 @@ module Chess
       set_cell(0, 7, Rook.new(:white, [0, 7]));   set_cell(7, 7, Rook.new(:white, [7, 7]));
       set_cell(1, 7, Knight.new(:white, [1, 7])); set_cell(6, 7, Knight.new(:white, [6, 7]));
       set_cell(2, 7, Bishop.new(:white, [2, 7])); set_cell(5, 7, Bishop.new(:white, [5, 7]));
-      set_cell(3, 7, King.new(:white, [3, 7]));   set_cell(4, 7, Queen.new(:white, [4, 7]));
+      set_cell(3, 7, Queen.new(:white, [3, 7]));  set_cell(4, 7, King.new(:white, [4, 7]));
       8.times do |space|
         set_cell(space, 6, Pawn.new(:white, [space, 6]))
       end
@@ -70,23 +103,14 @@ module Chess
       set_cell(starting_pos[0], starting_pos[1], nil)
     end
 
-
-    def checkmate?(color)
-      pieces = all_pieces(color)
+    def checkmate?(color, pieces = all_pieces(color))
       until pieces.empty?
         piece = pieces.pop
         piece_position = piece.pos
         moves = get_legal_moves(piece)
         until moves.empty?
           current_move = moves.pop
-          # the 'test move' might have a piece on it that we could delete, so we need to restore it
-          # if there is nothing there, the value will remain nil
-          to_revert = get_cell(current_move[0], current_move[1]).value
-          test_move(piece_position, current_move)
-          in_check = check?(color)
-          test_move(current_move, piece_position)
-          set_cell(current_move[0], current_move[1], to_revert)
-          return false if !in_check
+          return false unless ends_in_check?(current_move, piece_position, piece.color)
         end
       end
       true
@@ -193,6 +217,7 @@ module Chess
 
       until (x1 == x2 && y1 == y2)
         return false unless get_cell(x1, y1).value.nil?
+
         x1 += 1
         y1 -= 1
       end
@@ -217,6 +242,12 @@ module Chess
       get_cell(pos[0], pos[1]).value
     end
 
+    def not_moved?(pos)
+      return true if get_piece(pos).move_count.zero?
+
+      false
+    end
+
     def opposite_color(color)
       color == :black ? :white : :black
     end
@@ -225,6 +256,37 @@ module Chess
       pieces = all_pieces(color)
       king = pieces.detect { |piece| piece.instance_of? Chess::King }
       king.pos
+    end
+
+    def kingside_castling_available?(color)
+      king_x = 4
+      rook_x = 7
+      y = color == :white ? 7 : 0
+      clear_path([(king_x + 1), y], [rook_x, y]) &&
+        (not_moved?([king_x, y]) && not_moved?([rook_x, y])) &&
+        !check?(color) &&
+        [[(king_x + 1), y], [(king_x + 2), y]].each { |i| get_all_legal_moves(opposite_color(color)).none? i }
+    end
+
+    def queenside_castling_available?(color)
+      king_x = 4
+      rook_x = 0
+      y = color == :white ? 7 : 0
+      clear_path([king_x, y], [(rook_x + 1), y]) &&
+        (not_moved?([king_x, y]) && not_moved?([rook_x, y])) &&
+        !check?(color) &&
+        [[(king_x - 1), y], [(king_x - 2), y]].each { |i| get_all_legal_moves(opposite_color(color)).none? i }
+    end
+
+    def ends_in_check?(move_to_check, current_pos, color)
+      # the 'test move' might have a piece on it that we could delete, so we need to restore it
+      # if there is nothing there, the value will remain nil
+      to_revert = get_cell(move_to_check[0], move_to_check[1]).value
+      test_move(current_pos, move_to_check)
+      in_check = check?(color)
+      test_move(move_to_check, current_pos)
+      set_cell(move_to_check[0], move_to_check[1], to_revert)
+      in_check
     end
   end
 end
