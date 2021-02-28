@@ -103,5 +103,21 @@ module Chess
       end
     end
 
+    context 'en passant' do
+      subject(:board) { described_class.new}
+      before do
+        board.starting_board
+        board.move [0, 1], [0, 3]
+        board.move [0, 3], [0, 4]
+        board.move [1, 6], [1, 4]
+      end
+
+      it 'removes a piece captured en passant from the board' do
+        board.move([0, 4], [1, 5])
+        expect(board.get_cell(1, 4).value).to eql nil
+      end
+    end
+
+
   end
 end

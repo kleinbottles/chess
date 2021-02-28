@@ -26,9 +26,9 @@ module Chess
 
       return false if ends_in_check?(ending_pos, starting_pos, piece.color)
 
-      set_cell(ending_pos[0], ending_pos[1], piece)
-      piece.pos = [ending_pos[0], ending_pos[1]]
-      set_cell(starting_pos[0], starting_pos[1], nil)
+      delete_last_piece if valid_pawn_attack?(piece, ending_pos) && en_passant?(piece, ending_pos)
+
+      move_piece(starting_pos, ending_pos)
       piece.move_count += 1
       history << [piece, starting_pos, ending_pos]
     end
@@ -47,6 +47,7 @@ module Chess
       rook.pos = [3, y]
       set_cell(king_x, y, nil)
       set_cell(rook_x, y, nil)
+      history << [king, [king_x, y], [2, y]]
     end
 
     def castle_kingside(color)
@@ -63,6 +64,7 @@ module Chess
       rook.pos = [5, y]
       set_cell(king_x, y, nil)
       set_cell(rook_x, y, nil)
+      history << [king, [king_x, y], [6, y]]
     end
 
     def starting_board
@@ -96,8 +98,7 @@ module Chess
       false
     end
 
-    def test_move(starting_pos, ending_pos)
-      piece = get_piece(starting_pos)
+    def move_piece(starting_pos, ending_pos, piece = get_piece(starting_pos))
       set_cell(ending_pos[0], ending_pos[1], piece)
       piece.pos = [ending_pos[0], ending_pos[1]]
       set_cell(starting_pos[0], starting_pos[1], nil)
@@ -138,7 +139,7 @@ module Chess
       pieces.reduce([]) { |i, piece| i + get_legal_moves(piece) }
     end
 
-    private
+    #private
 
     def default_grid
       Array.new(8) { Array.new(8) { Cell.new } }
@@ -233,9 +234,29 @@ module Chess
            get_cell(diag[0], diag[1]).value&.pos == ending_pos
          end
         true
+      elsif to_check.include?(ending_pos) && en_passant?(piece, ending_pos)
+        true
       else
         false
       end
+    end
+
+    def en_passant?(piece, ending_pos, color = piece.color)
+      third_rank = color == :white ? 3 : 4
+      cell_ahead = color == :white ? 1 : -1
+      last_piece_moved = history[-1][0]
+      last_move_distance = (history[-1][1][1] - history[-1][2][1]).abs
+      return false unless last_piece_moved.instance_of?(Chess::Pawn) && last_move_distance == 2 &&
+                          piece.pos[1] == third_rank
+
+      return true if last_piece_moved.pos == [ending_pos[0], ending_pos[1] + cell_ahead]
+
+      false
+    end
+
+    def delete_last_piece
+      last_move = history[-1]
+      set_cell(last_move[-1][0], last_move[-1][1], nil)
     end
 
     def get_piece(pos)
@@ -282,11 +303,12 @@ module Chess
       # the 'test move' might have a piece on it that we could delete, so we need to restore it
       # if there is nothing there, the value will remain nil
       to_revert = get_cell(move_to_check[0], move_to_check[1]).value
-      test_move(current_pos, move_to_check)
+      move_piece(current_pos, move_to_check)
       in_check = check?(color)
-      test_move(move_to_check, current_pos)
+      move_piece(move_to_check, current_pos)
       set_cell(move_to_check[0], move_to_check[1], to_revert)
       in_check
     end
+
   end
 end
