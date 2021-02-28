@@ -131,7 +131,7 @@ module Chess
       pieces.reduce([]) { |i, piece| i + get_legal_moves(piece) }
     end
 
-    #private
+    private
 
     def default_grid
       Array.new(8) { Array.new(8) { Cell.new } }
@@ -301,6 +301,5 @@ module Chess
       set_cell(move_to_check[0], move_to_check[1], to_revert)
       in_check
     end
-
   end
 end
