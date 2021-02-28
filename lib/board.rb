@@ -41,12 +41,8 @@ module Chess
       y = color == :white ? 7 : 0
       king = get_piece([king_x, y])
       rook = get_piece([rook_x, y])
-      set_cell(2, y, king)
-      king.pos = [2, y]
-      set_cell(3, y, rook)
-      rook.pos = [3, y]
-      set_cell(king_x, y, nil)
-      set_cell(rook_x, y, nil)
+      move_piece(king.pos, [2, y])
+      move_piece(rook.pos, [3, y])
       history << [king, [king_x, y], [2, y]]
     end
 
@@ -58,12 +54,8 @@ module Chess
       y = color == :white ? 7 : 0
       king = get_piece([king_x, y])
       rook = get_piece([rook_x, y])
-      set_cell(6, y, king)
-      king.pos = [6, y]
-      set_cell(5, y, rook)
-      rook.pos = [5, y]
-      set_cell(king_x, y, nil)
-      set_cell(rook_x, y, nil)
+      move_piece(king.pos, [6, y])
+      move_piece(rook.pos, [5, y])
       history << [king, [king_x, y], [6, y]]
     end
 
@@ -283,7 +275,7 @@ module Chess
       king_x = 4
       rook_x = 7
       y = color == :white ? 7 : 0
-      clear_path([(king_x + 1), y], [rook_x, y]) &&
+      clear_path([(king_x + 1), y], [rook_x - 1, y]) &&
         (not_moved?([king_x, y]) && not_moved?([rook_x, y])) &&
         !check?(color) &&
         [[(king_x + 1), y], [(king_x + 2), y]].each { |i| get_all_legal_moves(opposite_color(color)).none? i }
@@ -293,7 +285,7 @@ module Chess
       king_x = 4
       rook_x = 0
       y = color == :white ? 7 : 0
-      clear_path([king_x, y], [(rook_x + 1), y]) &&
+      clear_path([king_x - 1, y], [(rook_x + 1), y]) &&
         (not_moved?([king_x, y]) && not_moved?([rook_x, y])) &&
         !check?(color) &&
         [[(king_x - 1), y], [(king_x - 2), y]].each { |i| get_all_legal_moves(opposite_color(color)).none? i }

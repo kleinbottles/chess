@@ -103,20 +103,83 @@ module Chess
       end
     end
 
-    context 'en passant' do
+    context 'when moving en passant' do
       subject(:board) { described_class.new}
       before do
         board.starting_board
-        board.move [0, 1], [0, 3]
-        board.move [0, 3], [0, 4]
+        board.move [2, 1], [2, 3]
+        board.move [2, 3], [2, 4]
         board.move [1, 6], [1, 4]
       end
 
       it 'removes a piece captured en passant from the board' do
-        board.move([0, 4], [1, 5])
+        board.move([2, 4], [1, 5])
         expect(board.get_cell(1, 4).value).to eql nil
       end
+
+      it 'allows a pawn to move en passant' do
+        board.move([2, 4], [1, 5])
+        expect(board.get_cell(1, 5).value).not_to eql nil
+      end
+
+      it 'does not allow a pawn to move anywhere' do
+        expect(board.move([2, 4], [3, 5])).to eql false
+      end
     end
+
+    context '#castle_kingside' do
+      subject(:board) { described_class.new }
+      before do
+        board.starting_board
+        board.set_cell(5, 0, nil)
+        board.set_cell(6, 0, nil)
+      end
+
+      it 'moves the king two squares right' do
+        king = board.get_cell(4, 0).value
+        board.castle_kingside(:black)
+        expect(board.get_cell(6, 0).value).to eql king
+      end
+
+      it 'removes the original king piece' do
+        board.castle_kingside(:black)
+        expect(board.get_cell(4, 0).value).to eql nil
+      end
+
+      it 'moves the rook two squares left' do
+        rook = board.get_cell(7, 0).value
+        board.castle_kingside(:black)
+        expect(board.get_cell(5, 0).value).to eql rook
+      end
+    end
+
+    context '#castle_queenside' do
+      subject(:board) { described_class.new }
+      before do
+        board.starting_board
+        board.set_cell(1, 0, nil)
+        board.set_cell(2, 0, nil)
+        board.set_cell(3, 0, nil)
+      end
+      it 'moves the king two squares left' do
+        king = board.get_cell(4, 0).value
+        board.castle_queenside(:black)
+        expect(board.get_cell(2, 0).value).to eql king
+      end
+
+      it 'removes the original king piece' do
+        board.castle_queenside(:black)
+        expect(board.get_cell(4, 0).value).to eql nil
+      end
+
+      it 'moves the rook three squares right' do
+        rook = board.get_cell(0, 0).value
+        board.castle_queenside(:black)
+        expect(board.get_cell(3, 0).value).to eql rook
+      end
+    end
+
+
 
 
   end
