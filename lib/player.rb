@@ -6,7 +6,7 @@ module Chess
     attr_reader :name
     attr_accessor :color
 
-    def initialize(name, color)
+    def initialize(name, color = nil)
       @name = name
       @color = color
     end

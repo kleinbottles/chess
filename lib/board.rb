@@ -21,6 +21,14 @@ module Chess
       get_cell(x, y).value = value
     end
 
+    def can_accept_move?(starting_pos, ending_pos, piece = get_piece(starting_pos))
+      return false unless legal_move?(starting_pos, ending_pos) && clear_path(starting_pos, ending_pos)
+
+      return false if ends_in_check?(ending_pos, starting_pos, piece.color)
+
+      true
+    end
+
     def move(starting_pos, ending_pos, piece = get_piece(starting_pos))
       return false unless legal_move?(starting_pos, ending_pos) && clear_path(starting_pos, ending_pos)
 
@@ -78,8 +86,10 @@ module Chess
     end
 
     def display_board
-      grid.each do |row|
-        puts row.map { |cell| cell.value == nil ? '_' : cell.value.symbol }.join(' ')
+      puts '  A B C D E F G H'
+      grid.each_with_index do |row, index|
+        print "#{index + 1} "
+        puts row.map { |cell| cell.value == nil ? "\u2610" : cell.value.symbol }.join(' ')
       end
     end
 
