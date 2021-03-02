@@ -8,6 +8,15 @@ module Chess
   class Board
     attr_reader :grid, :history
 
+    LEFT_CORNER_TOP = "\u250c"
+    RIGHT_CORNER_TOP = "\u2510"
+    H_LINE = "\u2501"
+    V_LINE = "\u2502"
+    LEFT_CORNER_BOTTOM = "\u2514"
+    RIGHT_CORNER_BOTTOM = "\u2518"
+    TOP_LINE = "  " + LEFT_CORNER_TOP + ((H_LINE + " ") * 15) + RIGHT_CORNER_TOP
+    BOTTOM_LINE = "  " + LEFT_CORNER_BOTTOM + ((H_LINE + " ") * 15) + RIGHT_CORNER_BOTTOM
+
     def initialize(grid = default_grid)
       @grid = grid
       @history = []
@@ -86,11 +95,14 @@ module Chess
     end
 
     def display_board
-      puts '  A B C D E F G H'
+      puts '   A   B   C   D   E   F   G   H'
+      puts TOP_LINE
       grid.each_with_index do |row, index|
-        print "#{index + 1} "
-        puts row.map { |cell| cell.value == nil ? "\u2610" : cell.value.symbol }.join(' ')
+        print "#{index + 1} #{V_LINE}"
+        puts row.map { |cell| cell.value == nil ? "  #{V_LINE}" : cell.value.symbol + " " + V_LINE }.join(" ")
+        puts BOTTOM_LINE
       end
+      puts '   A   B   C   D   E   F   G   H'
     end
 
     def check?(color)
