@@ -149,6 +149,8 @@ module Chess
 
     def legal_move?(starting_pos, ending_pos)
       piece = get_piece(starting_pos)
+      return false if piece.nil?
+
       return true if piece.get_moves(starting_pos).include? ending_pos
 
       return true if valid_pawn_attack?(piece, ending_pos)
