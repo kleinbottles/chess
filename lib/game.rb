@@ -3,6 +3,7 @@
 require 'yaml'
 require_relative 'board'
 require_relative 'player'
+require_relative 'colors'
 
 module Chess
   # The Game class manages the logic for the game, including
@@ -23,7 +24,7 @@ module Chess
     end
 
     def solicit_move
-      "\n#{current_player.name}: choose where to move your piece.\nEnter two coordinates separated by a space, or type \"SAVE\" to save your game.\n"
+      "\n#{current_player.name.red.bold}: choose where to move your piece.\nEnter two coordinates separated by a space, or type \"SAVE\" to save your game.\n"
     end
 
     def get_move(move = gets.chomp)
@@ -37,11 +38,11 @@ module Chess
     end
 
     def game_over_message
-      return "Checkmate. #{current_player.name} wins!"
+      return "Checkmate. #{current_player.name} wins!".red.bold
     end
 
     def check_message
-      return "#{other_player.name} is in check."
+      return "#{other_player.name} is in check.".blue
     end
 
     def save_game
@@ -54,7 +55,7 @@ module Chess
       File.open(filename, 'w') do |file|
         file.puts game
       end
-      puts 'Game saved, see you soon!'
+      puts 'Game saved, see you soon!'.gray
       exit
     end
 
@@ -106,7 +107,7 @@ module Chess
     end
 
     def start_game
-      puts "Start a (n)ew game or (l)oad an old one!"
+      puts "Start a #{"(n)".blue}ew game or #{"(l)".blue}oad an old one!"
       answer = gets.chomp.downcase
       if answer.match("n")
         puts 'Enter player 1\'s name:'
@@ -117,7 +118,7 @@ module Chess
         p2 = Chess::Player.new(p2_name)
         new_players = [p1, p2]
         new_game = Chess::Game.new(new_players)
-        puts "#{new_game.current_player.name} has been randomly selected to play as white and will go first."
+        puts "#{new_game.current_player.name.red} has been randomly selected to play as white and will go first."
         new_game.board.starting_board
         return new_game.play
       elsif answer.match("l")

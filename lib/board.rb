@@ -2,6 +2,7 @@
 
 require_relative 'cell'
 require_relative 'piece'
+require_relative 'colors'
 
 module Chess
   # The board class creates the board object which tracks the game state.
@@ -95,14 +96,14 @@ module Chess
     end
 
     def display_board
-      puts '   A   B   C   D   E   F   G   H'
+      puts '   A   B   C   D   E   F   G   H'.cyan
       puts TOP_LINE
       grid.each_with_index do |row, index|
-        print "#{index + 1} #{V_LINE}"
+        print "#{index + 1}".cyan + " #{V_LINE}"
         puts row.map { |cell| cell.value == nil ? "  #{V_LINE}" : cell.value.symbol + " " + V_LINE }.join(" ")
         puts BOTTOM_LINE
       end
-      puts '   A   B   C   D   E   F   G   H'
+      puts '   A   B   C   D   E   F   G   H'.cyan
     end
 
     def check?(color)
