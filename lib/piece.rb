@@ -70,7 +70,7 @@ module Chess
     def initialize(color, pos = nil, move_count = 0)
       super(color, pos)
       @move_count = move_count
-      @symbol = color == :black ? "\u265f" : "\u2659"
+      @symbol = color == :white ? "\u265f" : "\u2659"
     end
 
     def get_moves(position = pos)
@@ -89,7 +89,7 @@ module Chess
     def initialize(color, pos = nil, move_count = 0)
       super(color, pos)
       @move_count = move_count
-      @symbol = color == :black ? "\u265c" : "\u2656"
+      @symbol = color == :white ? "\u265c" : "\u2656"
     end
 
     def get_moves(position = pos)
@@ -104,7 +104,7 @@ module Chess
     def initialize(color, pos = nil, move_count = 0)
       super(color, pos)
       @move_count = move_count
-      @symbol = color == :black ? "\u265d" : "\u2657"
+      @symbol = color == :white ? "\u265d" : "\u2657"
     end
 
     def get_moves(position = pos)
@@ -119,7 +119,7 @@ module Chess
     def initialize(color, pos = nil, move_count = 0)
       super(color, pos)
       @move_count = move_count
-      @symbol = color == :black ? "\u265e" : "\u2658"
+      @symbol = color == :white ? "\u265e" : "\u2658"
     end
 
     def get_moves(position = pos)
@@ -139,7 +139,7 @@ module Chess
     def initialize(color, pos = nil, move_count = 0)
       super(color, pos)
       @move_count = move_count
-      @symbol = color == :black ? "\u265b" : "\u2655"
+      @symbol = color == :white ? "\u265b" : "\u2655"
     end
 
     def get_moves(position = pos)
@@ -154,7 +154,7 @@ module Chess
     def initialize(color, pos = nil, move_count = 0)
       super(color, pos)
       @move_count = move_count
-      @symbol = color == :black ? "\u265a" : "\u2654"
+      @symbol = color == :white ? "\u265a" : "\u2654"
     end
 
     def get_moves(position = pos)
